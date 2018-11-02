@@ -1,0 +1,13 @@
+<%- include header %>
+
+<h1><%= article.title %></h1>
+<h5>Written by: <%= article.author %></h5>
+<p>Content: <%= article.content %></p>
+<p>Article added: <%= article.dateCreated %></p>
+<!-- <p>Article modified: <%= article.dateModified %></p> -->
+<hr>
+<a href="/article/edit/<%= article.id %>" class="btn btn-default">Edit</a>
+<a href="#" class="btn btn-danger delete-article" data-id="<%= article.id %>">Delete</a>
+<br><br>
+
+<%- include footer %>
