@@ -2,12 +2,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
 	<h1>coinmarket</h1>
 	<div id="coin-list">
-		<input class="search" placeholder="otsi...">
-		<div>
-			<ul class="list">	
-			</ul>
-		</div>
-	</div>
+		<input type="text" id="filterInput" placeholder="otsi...">
 			<script type="text/javascript">
 				var xhr = new XMLHttpRequest();
 				xhr.open(
@@ -18,19 +13,42 @@
 				xhr.onreadystatechange = function() {
 				  	if (this.readyState == 4 && this.status == 200) {
 				    	var data = JSON.parse(this.responseText);
-
+				    	document.write("<ul id='list'>");
 						data.forEach(function(currency) {
-							document.write(currency.name + " " + currency.price_eur + " EUR<br>");
+							document.write("<li><a>" + currency.name + " " + currency.price_eur + " EUR<br></a></li>");
 						});
-				    	var coinlist = new List('coin-list', options, data);
+				    	document.write("</ul>");
 				  	}
 				};
 				xhr.send();
 
-				var options = {
-					valueNames: [ 'name', 'price_eur' ],
-					item: '<li><div class="row"><div class="name"></div><div class="price_eur"></div></div></li>'
-					};
-			</script>
+				//get input element
+				var filterInput = document.getElementById('filterInput');
 
+				//add event listener
+				filterInput.addEventListener('keyup', filterNames);
+
+				function filterNames(){
+					//get value of input
+					var filterValue = document.getElementById('filterInput').value.toUpperCase();
+					//console.log(filterValue);
+
+					//get list UL
+					var list = document.getElementById('list');
+					//get li items from list ul
+					var listItems = list.querySelectorAll('li');
+
+					//loop through li item list
+					for(var i = 0; i < listItems.length; i++){
+						var a = listItems[i].getElementsByTagName('a')[0];
+						//if match
+						if(a.innerHTML.toUpperCase().indexOf(filterValue) > -1){
+							listItems[i].style.display = '';
+						} else {
+							listItems[i].style.display = 'none';
+						}
+					}
+				}
+			</script>
+		</div>
 <%- include footer %>
