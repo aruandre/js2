@@ -22,10 +22,20 @@
             </div>
           </li>
         </ul>
+        <!--
         <form class="form-inline my-2 my-lg-0">
           <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
+      -->
+        <ul class="navbar-nav navbar-right">
+          <li class="nav-item">
+            <a class="nav-link" href="/users/register">Register</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/login">Login</a>
+          </li>
+        </ul>
       </div>
     </nav>
 
@@ -35,7 +45,7 @@
 	<ul class="list-group">	
 		<% for(var article of articles) { %>
 			<li class="list-group-item">
-				<a href="/article/<%= article.id %>" ><%= article.title %></a>
+				<a href="/articles/<%= article.id %>" ><%= article.title %></a>
 			</li>
 		<% } %>
 	</ul>

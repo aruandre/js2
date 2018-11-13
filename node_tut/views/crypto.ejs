@@ -1,0 +1,36 @@
+<%- include header %>
+<script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+	<h1>coinmarket</h1>
+	<div id="coin-list">
+		<input class="search" placeholder="otsi...">
+		<div>
+			<ul class="list">	
+			</ul>
+		</div>
+	</div>
+			<script type="text/javascript">
+				var xhr = new XMLHttpRequest();
+				xhr.open(
+				  	"GET",
+				  	"https://api.coinmarketcap.com/v1/ticker/?convert=EUR",
+				  	false // async
+				);
+				xhr.onreadystatechange = function() {
+				  	if (this.readyState == 4 && this.status == 200) {
+				    	var data = JSON.parse(this.responseText);
+
+						data.forEach(function(currency) {
+							document.write(currency.name + " " + currency.price_eur + " EUR<br>");
+						});
+				    	var coinlist = new List('coin-list', options, data);
+				  	}
+				};
+				xhr.send();
+
+				var options = {
+					valueNames: [ 'name', 'price_eur' ],
+					item: '<li><div class="row"><div class="name"></div><div class="price_eur"></div></div></li>'
+					};
+			</script>
+
+<%- include footer %>

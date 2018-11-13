@@ -6,9 +6,9 @@ const slugify = require('slugify');
 const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
+const config = require('./config/database');
 
-
-mongoose.connect('mongodb://localhost/harjutus01');
+mongoose.connect(config.database);
 let db = mongoose.connection;
 
 //check connection
@@ -86,85 +86,19 @@ app.get('/', (req, res) => {
 	});	
 });
 
-//get single article
-app.get('/article/:id', (req, res) => {
-	Article.findById(req.params.id, (err, article) => {
-		res.render('article', {
-			article: article
-		});
-	});
-});
-
-//add article route
-app.get('/articles/add', (req, res) => {
-	res.render('add_article', {
-		title: 'Add article'
-	});
-});
-
-//add submit POST route
-app.post('/articles/add', (req, res) => {
-	let article = new Article();
-	article.title = req.body.title;
-	article.author = req.body.author;
-	article.content = req.body.content;
-	article.isPublic = req.body.isPublic == undefined ? false : true;
-
-	article.save((err) => {
-		if(err){
-			console.log(err);
-		} else {
-			req.flash('success', 'Article added');
-			res.redirect('/');
-		}
-	});
-});
-
-//load edit form
-app.get('/article/edit/:id', (req, res) => {
-	Article.findById(req.params.id, (err, article) => {
-		res.render('edit_article', {
-			title: 'Edit article',
-			article: article
-		});
-	});
-});
-
-//edit submit POST route
-app.post('/articles/edit/:id', (req, res) => {
-	let article = {};
-	article.title = req.body.title;
-	article.author = req.body.author;
-	article.content = req.body.content;
-	article.isPublic = req.body.isPublic == undefined ? false : true;
-
-	let query = {_id:req.params.id}
-
-	Article.update(query, article, (err) => {
-		if(err){
-			console.log(err);
-		} else {
-			req.flash('success', 'Article updated');
-			res.redirect('/');
-		}
-	});
-});
-
-
-//delete article
-app.delete('/article/:id', (req, res) => {
-	let query = {_id:req.params.id}
-
-	Article.deleteOne(query, (err) => {
-		if(err){
-			console.log(err);
-		}
-		res.send('Success');
-	});
-});
+//route files
+let articles = require('./routes/articles');
+let users = require('./routes/users');
+let crypto = require('./routes/crypto');
+app.use('/articles', articles);
+app.use('/users', users);
+app.use('/crypto', crypto);
 
 
 //start server
 app.listen(3000, () => {
 	console.log("--- server kuulab porti 3000 ---");
 });
+
+//----------------------------------------
+//jäi pooleli siin -> https://www.youtube.com/watch?v=mAOxWf36YLo&index=10&list=PLillGF-RfqbYRpji8t4SxUkMxfowG4Kqp&pbjreload=10
