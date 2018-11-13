@@ -24,6 +24,24 @@ db.on('error', (err) => {
 //init app
 const app = express();
 
+//socket.io
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
+io.on('connection', (socket) => {
+	console.log('--- ühendus kasutajaga on loodud ---');
+});
+
+io.on('connection', function(socket){
+    console.log('Ühendus kasutajaga on loodud');
+        
+    // võtame kliendi poolt vastu teate "chat"
+    socket.on('chat', (msg) => {
+        // saadame kõikidele klientidele tagasi
+        io.emit('chat', msg);
+    });
+});
+
 //bring in models
 let Article = require('./models/article');
 
@@ -96,7 +114,7 @@ app.use('/crypto', crypto);
 
 
 //start server
-app.listen(3000, () => {
+http.listen(3000, () => {
 	console.log("--- server kuulab porti 3000 ---");
 });
 
