@@ -12,36 +12,6 @@
       </li>
     <% } %>
   </ul>
-
-  	<script src="/socket.io/socket.io.js"></script>
-	<!-- Vaja on tekstivälja, nuppu ning ühte elementi veel, kuhu sõnumid tekitada -->
-	<ul id="messages"></ul>
-	<br>
-	<input type="text" id="txt">
-	<button id="send">Send</button>
-
-	<script>
-	  var socket = io();
-	  
-	  // elemendid muutujatesse
-	  var chat = document.getElementById("messages");
-	  var txt = document.getElementById("txt");
-	  var sendBtn = document.getElementById("send");
-
-	  // nupu funktsioon
-	  sendBtn.addEventListener("click", function(e) {
-	      // saadab teate nimega "chat" serverisse, selle peame serveri pool vastu võtma, et kõikidele klientidele edastada
-	      socket.emit('chat', txt.value);
-	      // tekstivälja sisu tühjaks
-	      txt.value = "";
-	  });
-
-	  // selle funktsiooni abil võtma serveri poolt vastu teateid nimega 'chat'
-	  socket.on('chat', function(msg) {
-	      // ning lisame saadud teate kõikide teiste teadete hulka
-	      chat.innerHTML += '<li>' + msg + '</li>';
-	  });
-	</script>
 </body>
 
 <%- include footer %>

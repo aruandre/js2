@@ -24,23 +24,23 @@ db.on('error', (err) => {
 //init app
 const app = express();
 
+
+//--------------
 //socket.io
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
+//kuula uusi ühendusi
 io.on('connection', (socket) => {
-	console.log('--- ühendus kasutajaga on loodud ---');
-});
+	console.log('--- uus kasutaja liitus ---');
 
-io.on('connection', function(socket){
-    console.log('Ühendus kasutajaga on loodud');
-        
     // võtame kliendi poolt vastu teate "chat"
     socket.on('chat', (msg) => {
         // saadame kõikidele klientidele tagasi
         io.emit('chat', msg);
     });
 });
+
 
 //bring in models
 let Article = require('./models/article');
@@ -90,6 +90,7 @@ app.use(expressValidator({
 	}
 }));
 
+//----------------------
 //home route
 app.get('/', (req, res) => {
 	Article.find({}, (err, articles) => {
@@ -108,11 +109,14 @@ app.get('/', (req, res) => {
 let articles = require('./routes/articles');
 let users = require('./routes/users');
 let crypto = require('./routes/crypto');
+let chat = require('./routes/chat');
 app.use('/articles', articles);
 app.use('/users', users);
 app.use('/crypto', crypto);
+app.use('/chat', chat);
 
 
+//------------------------------
 //start server
 http.listen(3000, () => {
 	console.log("--- server kuulab porti 3000 ---");

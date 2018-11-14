@@ -1,0 +1,54 @@
+<%- include header %>
+
+<body class="container">
+	
+	<script src="/socket.io/socket.io.js"></script>
+	<!-- tekstiväli, nupp ja üks element veel, kuhu sõnumid tekitada -->
+	<ul id="messages"></ul>
+	<br>
+	<input type="text" id="txt">
+	<button id="send_txt">Send</button>
+	
+	<input type="text" id="username">
+	<button id="send_username">Change username</button>
+
+	<script>
+		let socket = io();
+	  
+		// elemendid muutujatesse
+		let chat = document.getElementById('messages');
+		let txt = document.getElementById('txt');
+		let sendTxt = document.getElementById('send_txt');
+		let username = document.getElementById('username');
+		let sendUsername = document.getElementById('send_username');
+
+		//username
+	    socket.username = prompt('Username:');
+	    if(socket.username == ''){
+	    	socket.username = prompt('Empty values not allowed! Input username:');
+	    } 
+
+	    //username vahetus
+	    sendUsername.addEventListener('click', (e) => {
+	    	socket.emit('username', sendUsername.value);
+	    	console.log(sendUsername.value);
+	    	socket.username = sendUsername.value;
+	    });
+
+		// nupu funktsioon
+		sendTxt.addEventListener('click', (e) => {
+	    	// saadab teate nimega "chat" serverisse, selle peame serveri pool vastu võtma, et kõikidele klientidele edastada
+	    	socket.emit('chat', txt.value);
+	    	// tekstivälja sisu tühjaks
+	    	txt.value = "";
+		});
+
+		// selle funktsiooni abil võtma serveri poolt vastu teateid nimega 'chat'
+		socket.on('chat', (msg) => {
+	    	// ning lisame saadud teate kõikide teiste teadete hulka
+	    	chat.innerHTML += socket.username + ': ' + msg + '<br>';
+		});
+	</script>
+</body>
+
+<%- include footer %>
