@@ -30,15 +30,77 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-//kuula uusi ühendusi
-io.on('connection', (socket) => {
-	console.log('--- uus kasutaja liitus ---');
+//connected users
+connections = [];
 
-    // võtame kliendi poolt vastu teate "chat"
-    socket.on('chat', (msg) => {
-        // saadame kõikidele klientidele tagasi
-        io.emit('chat', msg);
-    });
+//listen to new connections
+io.on('connection', (socket) => {
+	let chat = db.collection('chats');
+	connections.push(socket);
+	console.log('--- %s users connected ---', connections.length);
+
+	/*socket.on('user_connected', (data) => {
+		socket.broadcast.emit({name: name} + 'joined chat');
+	});
+	*/
+
+	//disconnect
+	socket.on('disconnect', (data) => {
+		connections.splice(connections.indexOf(socket), 1);
+		console.log('--- %s user disconnected ---', connections.length);
+	});
+
+	sendStatus = ((s) => {
+		socket.emit('status', s);
+	});
+
+	//get chats from DB
+	chat.find().limit(100).sort({_id:1}).toArray((err, res) => {
+		if(err){
+			throw err;
+		} else {
+		    // saadame kõikidele klientidele tagasi
+		    socket.emit('output', res);
+		}
+	});
+
+	//handle input events
+	socket.on('input', (data) => {
+		let name = data.name;
+		let message = data.message;
+
+		//check for name and message
+		if(name == '' || message == ''){
+			//send error status
+			sendStatus('please enter a name and message');
+		} else {
+			//insert msg
+			chat.insert({name: name, message: message}, () => {
+				io.emit('output', [data]);
+				
+				//send status obj
+				sendStatus({
+					message: 'Message sent',
+					clear: true
+				});
+			});
+		}
+	});
+
+	//handle clear
+	socket.on('clear', (data) => {
+		//remove all chats from collection
+		chat.remove({}, () => {
+			//emit cleared
+			socket.emit('cleared');
+		});
+	});
+
+	//handle typing
+	socket.on('typing', (data) => {
+		socket.broadcast.emit('typing', {name: name});
+		//socket.emit('typing');
+	});
 });
 
 

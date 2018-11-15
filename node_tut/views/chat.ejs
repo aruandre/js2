@@ -1,54 +1,140 @@
 <%- include header %>
+<script src="/socket.io/socket.io.js"></script>
 
 <body class="container">
-	
-	<script src="/socket.io/socket.io.js"></script>
-	<!-- tekstiväli, nupp ja üks element veel, kuhu sõnumid tekitada -->
-	<ul id="messages"></ul>
-	<br>
-	<input type="text" id="txt">
-	<button id="send_txt">Send</button>
-	
-	<input type="text" id="username">
-	<button id="send_username">Change username</button>
+	<div class="row">
+		<div class="col-md-6 offset-md-3 col-sm-12">
+			<h1 class="text-center">MongoChat
+				<button id="clear" class="btn btn-danger">Clear</button>
+			</h1>
+			<style>
+				#messages {height: 300px;}
+			</style>
+			<div id="status"></div>
+			<div id="chat">
+				<input type="text" id="username" class="form-control" placeholder="Enter name...">
+				<br>
+				<div class="card">
+					<div id="messages" class="card-block">
+						<div id="typing"></div>
+						<div id="disconnect"></div>
+					</div>
+				</div>
+				<br>
+				<textarea id="textarea" class="form-control" placeholder="Enter message..."></textarea>
+			</div>
+		</div>	
+	</div>
+<script type="text/javascript">
+	(function(){
+		let element = function(id){
+			return document.getElementById(id);
+		}
 
-	<script>
-		let socket = io();
-	  
-		// elemendid muutujatesse
-		let chat = document.getElementById('messages');
-		let txt = document.getElementById('txt');
-		let sendTxt = document.getElementById('send_txt');
-		let username = document.getElementById('username');
-		let sendUsername = document.getElementById('send_username');
+		//get elements
+		let status = element('status');
+		let messages = element('messages');
+		let textarea = element('textarea');
+		let username = element('username');
+		let clearBtn = element('clear');
+		//let typing = element('typing');
 
-		//username
-	    socket.username = prompt('Username:');
-	    if(socket.username == ''){
-	    	socket.username = prompt('Empty values not allowed! Input username:');
-	    } 
+		//set default status
+		let statusDefault = status.textContent;
 
-	    //username vahetus
-	    sendUsername.addEventListener('click', (e) => {
-	    	socket.emit('username', sendUsername.value);
-	    	console.log(sendUsername.value);
-	    	socket.username = sendUsername.value;
-	    });
+		let setStatus = function(s) {
+			//set status
+			status.textContent = s;
 
-		// nupu funktsioon
-		sendTxt.addEventListener('click', (e) => {
-	    	// saadab teate nimega "chat" serverisse, selle peame serveri pool vastu võtma, et kõikidele klientidele edastada
-	    	socket.emit('chat', txt.value);
-	    	// tekstivälja sisu tühjaks
-	    	txt.value = "";
-		});
+			if(s !== statusDefault){
+				let delay = setTimeout(() => {
+					setStatus(statusDefault);
+				}, 4000);
+			}
+		}
 
-		// selle funktsiooni abil võtma serveri poolt vastu teateid nimega 'chat'
-		socket.on('chat', (msg) => {
-	    	// ning lisame saadud teate kõikide teiste teadete hulka
-	    	chat.innerHTML += socket.username + ': ' + msg + '<br>';
-		});
-	</script>
+		//connect to socket.io
+		let socket = io.connect('http://127.0.0.1:3000');
+
+		//check for connection
+		if(socket !== undefined){
+			console.log('socket.io ühendus olemas');
+
+			socket.on('output', (data) => {
+				//console.log(data);
+				if(data.length){
+					for(let i = 0; i < data.length; i++){
+						//build out message div and its attribute
+						let message = document.createElement('div');
+						message.setAttribute('class', 'chat-message');
+						message.textContent = data[i].name + ": " + data[i].message;
+						messages.appendChild(message);
+						messages.insertBefore(message, messages.firstChild);
+					}
+				}
+			});
+
+			//get status from server
+			socket.on('status', (data) => {
+				//get message status
+				setStatus((typeof data === 'object') ? data.message: data);
+			
+				//if status is clear, clear text
+				if(data.clear){
+					textarea.value = '';
+				}
+			});
+
+			//handle input
+			textarea.addEventListener('keydown', (e) => {
+				if(e.which === 13 && e.shiftKey == false){ 	//keycode 13 = enter
+					//emit to server input
+					socket.emit('input', {
+						name:username.value,
+						message:textarea.value
+					});
+
+					//cancels the event
+					e.preventDefault();
+				}
+			});
+
+			//handle chat clear
+			clearBtn.addEventListener('click', () => {
+				socket.emit('clear');
+			});
+
+			//clear message
+			socket.on('cleared', () => {
+				messages.textContent = '';
+			});
+
+			//typing message
+			typing.addEventListener('keypress', (e) => {
+				if(data){
+					document.getElementById('typing').innerHTML = '<p><em>' + data + ' is typing...</em></p>';
+				} else {
+					document.getElementById('typing').innerHTML = '';
+
+				}
+				socket.emit('typing');
+			});
+
+			//user connected message
+			socket.on('user_connected', () => {
+				
+			})
+
+			//disconnected message
+			socket.on('disconnect', () => {
+				document.getElementById('disconnect').innerHTML = username + ' disconnected';
+					
+			});
+		}
+
+	})();
+</script>
+
 </body>
 
 <%- include footer %>
