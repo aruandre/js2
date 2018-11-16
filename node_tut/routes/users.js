@@ -63,6 +63,7 @@ router.post('/register', (req, res) => {
 //login form
 router.get('/login', (req, res) => {
 	res.render('login');
+	req.flash('succes', 'You are now logged in');
 });
 
 //login process
@@ -75,8 +76,10 @@ router.post('/login', (req, res, next) => {
 });
 
 //logout
-router.get('logout', (req, res) => {
+router.get('/logout', (req, res) => {
 	req.logout();
+	req.flash('success', 'You are logged out');
+	res.redirect('/users/login');
 });
 
 module.exports = router;

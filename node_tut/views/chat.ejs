@@ -4,13 +4,11 @@
 <body class="container">
 	<div class="row">
 		<div class="col-md-6 offset-md-3 col-sm-12">
-			<h1 class="text-center">MongoChat
-				<button id="clear" class="btn btn-danger">Clear</button>
+			<h1 class="text-center">Support Chat
 			</h1>
 			<style>
 				#messages {height: 300px;}
 			</style>
-			<div id="status"></div>
 			<div id="chat">
 				<input type="text" id="username" class="form-control" placeholder="Enter name...">
 				<br>
@@ -21,7 +19,10 @@
 					</div>
 				</div>
 				<br>
+				<div id="status"></div>
 				<textarea id="textarea" class="form-control" placeholder="Enter message..."></textarea>
+				<button id="send" class="btn btn-success">Send</button>
+				<button id="clear" class="btn btn-danger">Clear</button>
 			</div>
 		</div>	
 	</div>
@@ -112,7 +113,7 @@
 			//typing message
 			typing.addEventListener('keypress', (e) => {
 				if(data){
-					document.getElementById('typing').innerHTML = '<p><em>' + data + ' is typing...</em></p>';
+					document.getElementById('typing').innerHTML = '<p>' + data + ' is typing...</p>';
 				} else {
 					document.getElementById('typing').innerHTML = '';
 
@@ -126,10 +127,16 @@
 			})
 
 			//disconnected message
+			socket.emit('username', username);
 			socket.on('disconnect', () => {
-				document.getElementById('disconnect').innerHTML = username + ' disconnected';
-					
+				let connectionMsg = socket.name + 'disconnected';
+				console.log(connectionMsg);
 			});
+
+			/*socket.on('disconnect', () => {
+					document.getElementById('disconnect').innerHTML = username + ' disconnected';
+					
+			});*/
 		}
 
 	})();

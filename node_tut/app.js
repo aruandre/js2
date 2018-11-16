@@ -6,6 +6,7 @@ const slugify = require('slugify');
 const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
+const passport = require('passport');
 const config = require('./config/database');
 
 mongoose.connect(config.database);
@@ -48,6 +49,7 @@ io.on('connection', (socket) => {
 	socket.on('disconnect', (data) => {
 		connections.splice(connections.indexOf(socket), 1);
 		console.log('--- %s user disconnected ---', connections.length);
+		//socket.name = name;
 	});
 
 	sendStatus = ((s) => {
@@ -151,6 +153,19 @@ app.use(expressValidator({
 		};
 	}
 }));
+
+
+//---------------------
+//passport config
+require('./config/passport')(passport);
+//passport MW
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('*', (req, res, next) => {
+	res.locals.user = req.user || null;
+	next();
+});
 
 //----------------------
 //home route
