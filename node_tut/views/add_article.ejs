@@ -1,16 +1,13 @@
 <%- include header %>
 
 <body class="container">
-	<h1><%= title %></h1>
+	<h1><%= locals.title %></h1>
 	<form method="POST" action="/articles/add">
 		<div id="form-group">
 			<label>Title:</label>
 			<input type="text" name="title" class="form-control">
 		</div>
-		<div id="form-group">
-			<label>Author:</label>
-			<input type="text" name="author" class="form-control">
-		</div>
+		
 		<div id="form-group">
 			<label>Content:</label>
 			<textarea name="content" class="form-control"></textarea>

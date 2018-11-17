@@ -137,7 +137,7 @@ app.use((req, res, next) => {
 });
 
 //express validator MW
-app.use(expressValidator({
+/*app.use(expressValidator({
 	errorFormatter: (param, msg, value) => {
 		var namespace = param.split('.'),
 		root = namespace.shift(),
@@ -153,7 +153,7 @@ app.use(expressValidator({
 		};
 	}
 }));
-
+*/
 
 //---------------------
 //passport config
@@ -175,7 +175,7 @@ app.get('/', (req, res) => {
 			console.log(err);
 		} else {
 			res.render('index', {
-			title: 'Artiklid',
+			title: 'Articles',
 			articles: articles
 			});
 		}
@@ -198,6 +198,3 @@ app.use('/chat', chat);
 http.listen(3000, () => {
 	console.log("--- server kuulab porti 3000 ---");
 });
-
-//----------------------------------------
-//jäi pooleli siin -> https://www.youtube.com/watch?v=mAOxWf36YLo&index=10&list=PLillGF-RfqbYRpji8t4SxUkMxfowG4Kqp&pbjreload=10
