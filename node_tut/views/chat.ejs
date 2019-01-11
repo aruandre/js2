@@ -22,7 +22,9 @@
 				<div id="status"></div>
 				<textarea id="textarea" class="form-control" placeholder="Enter message..."></textarea>
 				<button id="send" class="btn btn-success">Send</button>
-				<button id="clear" class="btn btn-danger">Clear</button>
+				<button id="getMsg" class="btn btn-info">Get all</button>
+				<button id="clear" class="btn btn-danger">Clear all</button>
+				<button id="edit" class="btn btn-warning">Edit</button>
 			</div>
 		</div>	
 	</div>
@@ -38,6 +40,8 @@
 		let textarea = element('textarea');
 		let username = element('username');
 		let clearBtn = element('clear');
+		let sendBtn = element('send');
+		let getBtn = element('getMsg');
 		//let typing = element('typing');
 
 		//set default status
@@ -94,10 +98,22 @@
 						name:username.value,
 						message:textarea.value
 					});
-
 					//cancels the event
 					e.preventDefault();
 				}
+			});
+
+			sendBtn.addEventListener('click', (e) => {
+				socket.emit('input', {
+					name:username.value,
+					message:textarea.value
+				});
+			});
+
+			//handle getMsg
+			getBtn.addEventListener('click', (e) => {
+				socket.emit('getMsg', {
+				});
 			});
 
 			//handle chat clear
@@ -121,9 +137,10 @@
 				socket.emit('typing');
 			});
 
+			connected_users = [];
 			//user connected message
 			socket.on('user_connected', () => {
-				
+				connected_users.push(username);
 			})
 
 			//disconnected message
@@ -132,16 +149,11 @@
 				let connectionMsg = socket.name + 'disconnected';
 				console.log(connectionMsg);
 			});
-
-			/*socket.on('disconnect', () => {
-					document.getElementById('disconnect').innerHTML = username + ' disconnected';
-					
-			});*/
 		}
 
 	})();
 </script>
-
 </body>
+<hr>
 
 <%- include footer %>

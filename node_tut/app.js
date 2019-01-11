@@ -40,22 +40,28 @@ io.on('connection', (socket) => {
 	connections.push(socket);
 	console.log('--- %s users connected ---', connections.length);
 
+	//disconnect
+	socket.on('disconnect', (data) => {
+		connections.splice(connections.indexOf(socket), 1);
+		console.log('--- user %s disconnected ---', connections.length);
+		//socket.name = name;
+	});
+
 	/*socket.on('user_connected', (data) => {
 		socket.broadcast.emit({name: name} + 'joined chat');
 	});
 	*/
-
-	//disconnect
-	socket.on('disconnect', (data) => {
-		connections.splice(connections.indexOf(socket), 1);
-		console.log('--- %s user disconnected ---', connections.length);
-		//socket.name = name;
+/*
+	socket.on('nimi', (name) => {
+		socket.name = name;
 	});
+*/
 
 	sendStatus = ((s) => {
 		socket.emit('status', s);
 	});
 
+/*
 	//get chats from DB
 	chat.find().limit(100).sort({_id:1}).toArray((err, res) => {
 		if(err){
@@ -65,7 +71,7 @@ io.on('connection', (socket) => {
 		    socket.emit('output', res);
 		}
 	});
-
+*/
 	//handle input events
 	socket.on('input', (data) => {
 		let name = data.name;
@@ -77,7 +83,7 @@ io.on('connection', (socket) => {
 			sendStatus('please enter a name and message');
 		} else {
 			//insert msg
-			chat.insert({name: name, message: message}, () => {
+			chat.insertOne({name: name, message: message}, () => {
 				io.emit('output', [data]);
 				
 				//send status obj
@@ -96,6 +102,22 @@ io.on('connection', (socket) => {
 			//emit cleared
 			socket.emit('cleared');
 		});
+	});
+
+	//handle edit
+	socket.on('edit', (data) => {
+		chat.findOneAndUpdate({name: name, message: message}, () => {
+			io.emit('output', [data]);
+			sendStatus({
+					message: 'Message sent',
+					clear: true
+				});
+		});
+	});
+
+	//handle getMsg
+	socket.on('getMsg', (data) => {
+		chat.find();
 	});
 
 	//handle typing
@@ -187,10 +209,12 @@ let articles = require('./routes/articles');
 let users = require('./routes/users');
 let crypto = require('./routes/crypto');
 let chat = require('./routes/chat');
+//let vision = require('./routes/vision');
 app.use('/articles', articles);
 app.use('/users', users);
 app.use('/crypto', crypto);
 app.use('/chat', chat);
+//app.use('/vision', vision);
 
 
 //------------------------------

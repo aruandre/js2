@@ -1,35 +1,21 @@
 let mongoose = require('mongoose');
 
-//article schema
-let articleSchema = mongoose.Schema({
+//product schema
+let productSchema = mongoose.Schema({
 	title:{
 		type: String,
 		trim: true,
 		required: true
 	},
-	author:{
-		type: String,
+	price:{
+		type: Number,
 		trim: true,
-		required: true
-	},
-	content:{
-		type: String,
-		trim: true,
-		required: true
-	},
-	isPublic:{
-		type: Boolean,
-		default: false,
 		required: true
 	},
 	dateCreated:{
 		type: Date,
 		default: Date.now
 	}
-	/*dateModified:{
-		type: Date,
-		default: Date.now
-	}*/
 });
 
-let Article = module.exports = mongoose.model('Article', articleSchema);
+let Product = module.exports = mongoose.model('Product', productSchema);

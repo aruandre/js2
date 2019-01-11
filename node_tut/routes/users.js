@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const expressValidator = require('express-validator');
+router.use(expressValidator());
 
 //bring in user model
 let User = require('../models/user');
@@ -19,12 +21,12 @@ router.post('/register', (req, res) => {
 	const password = req.body.password;
 	const password2 = req.body.password2;
 
-	req.checkBody('name', 'Name is required').notEmpty();
-	req.checkBody('email', 'Email is required').notEmpty();
-	req.checkBody('email', 'Email is not valid').isEmail();
-	req.checkBody('username', 'Username is required').notEmpty();
-	req.checkBody('password', 'Password is required').notEmpty();
-	req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
+	req.check('name', 'Name is required').notEmpty();
+	req.check('email', 'Email is required').notEmpty();
+	req.check('email', 'Email is not valid').isEmail();
+	req.check('username', 'Username is required').notEmpty();
+	req.check('password', 'Password is required').notEmpty();
+	req.check('password2', 'Passwords do not match').equals(req.body.password);
 
 	let errors = req.validationErrors();
 
