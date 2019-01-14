@@ -1,14 +1,15 @@
-git clone https://github.com/aruandre/js2.git
+rakendus kasutab nodejs, mongodb, socketio ja bootstrapi raamistikke. 
 
+git clone https://github.com/aruandre/js2.git
+cd js2 ->> cd node_tut
 npm install
-npm start
+käivita oma mongoDB
 
 Rakenduse käivitamine:
-käsureal käivita: "node app.js" või "nodemon"
+käsureal: "npm start" või "nodemon"
 
 ava browseris: http://localhost:3000
 
-rakendus kasutab nodejs, mongodb, socketio ja bootstrapi raamistikke.
 loo kasutaja, logi sisse, saad artikleid vaadata/luua/muuta/kustutada.
 /crypto ->> küsitakse coinmarketcap API käest krüptovaluutade hindasid ja serveeritakse nimekirjana. saab filtreerida otsingu abil.
-/chat ->> teateid saab saata, salvestatakse andmebaasi, saab kõik teated kustutada, edit/getall ei tööta
+/chat ->> saab teateid saata, salvestatakse andmebaasi, saab kõik teated kustutada, edit/getall ei tööta
