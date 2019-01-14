@@ -1,6 +1,7 @@
 rakendus kasutab nodejs, mongodb, socketio ja bootstrapi raamistikke. 
 
 git clone https://github.com/aruandre/js2.git
+
 cd js2 ->> cd node_tut
 npm install
 käivita oma mongoDB
